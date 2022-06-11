@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+
+  proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile-proxy
+    depends_on:
+    - service-squid
+    ports:
+    - 10000:10000
+
+  service-squid:
+    build:
+      context: squid
+      dockerfile: Dockerfile-squid
+    depends_on:
+    - service-https
+    hostname: service-squid
+
+
+  service-https:
+    image: mendhak/http-https-echo
+    hostname: service-https
+    environment:
+    - HTTP_PORT=0

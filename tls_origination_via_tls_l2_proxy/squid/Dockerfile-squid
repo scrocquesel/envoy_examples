@@ -1,0 +1,28 @@
+FROM alpine AS makeconf
+
+WORKDIR /conf
+COPY generate-cert.sh generate-htpasswd.sh /conf/
+
+RUN set -ex \
+  && apk --no-cache add openssl apache2-utils \
+  && sh generate-cert.sh \
+  && sh generate-htpasswd.sh \
+  && apk del openssl apache2-utils \
+  && rm -rf /var/cache/apk/* \
+  && rm generate-cert.sh generate-htpasswd.sh
+
+FROM alpine
+
+RUN apk --no-cache add squid && \
+    rm -rf /var/cache/apk/* 
+
+EXPOSE 3129/tcp
+
+COPY entrypoint.sh /sbin/entrypoint.sh
+RUN chmod 755 /sbin/entrypoint.sh
+
+COPY squid.conf /etc/squid/squid.conf
+COPY --from=makeconf /conf/squid-ca-cert-key.pem /etc/squid/proxy.pem
+COPY --from=makeconf /conf/htpasswd /etc/squid/htpasswd
+
+ENTRYPOINT ["/sbin/entrypoint.sh"]
