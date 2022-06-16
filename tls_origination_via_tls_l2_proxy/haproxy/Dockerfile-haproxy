@@ -1,0 +1,4 @@
+FROM haproxy:lts
+
+COPY tcp-domain2backend-map.txt /usr/local/etc/haproxy/tcp-domain2backend-map.txt
+COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg

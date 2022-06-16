@@ -1,14 +1,25 @@
 version: "3.8"
 services:
 
-  proxy:
+  # proxy:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-proxy
+  #   depends_on:
+  #   - service-haproxy
+  #   ports:
+  #   - 10000:10000
+
+  service-haproxy:
     build:
-      context: .
-      dockerfile: Dockerfile-proxy
+      context: haproxy
+      dockerfile: Dockerfile-haproxy
     depends_on:
     - service-squid
-    ports:
-    - 10000:10000
+    hostname: service-haproxy
+    # ports:
+    # - 3129:3129
+
 
   service-squid:
     build:
@@ -17,7 +28,9 @@ services:
     depends_on:
     - service-https
     hostname: service-squid
-
+    ports:
+    - 3129:3129
+    - 3128:3128
 
   service-https:
     image: mendhak/http-https-echo

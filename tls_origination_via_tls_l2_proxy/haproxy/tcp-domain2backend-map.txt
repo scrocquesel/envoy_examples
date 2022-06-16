@@ -1,0 +1,2 @@
+service-squid squid-backend
+localhost squid-backend

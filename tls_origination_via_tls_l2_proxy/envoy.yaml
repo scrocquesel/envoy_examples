@@ -78,10 +78,10 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: service-squid
+                      address: host.docker.internal
                       port_value: 3129
       transport_socket:
         name: envoy.transport_sockets.tls
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-          sni: service-squid
+          sni: service-haproxy
