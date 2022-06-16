@@ -84,4 +84,4 @@ static_resources:
         name: envoy.transport_sockets.tls
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-
+          sni: service-squid
