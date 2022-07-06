@@ -1,6 +1,5 @@
- #FROM envoyproxy/envoy-dev:latest segfault
- FROM envoyproxy/envoy:v1.22-latest
-
+FROM envoyproxy/envoy-debug-dev:latest
+ 
 COPY ./envoy.yaml /etc/envoy.yaml
 RUN chmod go+r /etc/envoy.yaml
 CMD ["/usr/local/bin/envoy", "-c /etc/envoy.yaml"]
