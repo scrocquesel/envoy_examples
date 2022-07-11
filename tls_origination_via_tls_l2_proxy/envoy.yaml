@@ -17,13 +17,12 @@ static_resources:
                     - name: app
                       domains:
                         - "service-https"
+                        - "other-https"
                       routes:
                         - match:
                             prefix: "/"
                           route:
-                            cluster: loopback_cluster_service-https
-                            host_rewrite_literal: service-https
-                            append_x_forwarded_host: true
+                            cluster: loopback_cluster-https
                 http_filters:
                   - name: envoy.filters.http.router
                     typed_config:
@@ -32,6 +31,11 @@ static_resources:
       address:
         pipe:
           path: "@/listener_service-https"
+      listener_filters:
+        # inspect SNI and set REQUESTED_SERVER_NAME
+        - name: envoy.filters.listener.tls_inspector
+          typed_config:
+            "@type": "type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector"
       filter_chains:
         - filters:
             - name: tcp
@@ -40,14 +44,14 @@ static_resources:
                 stat_prefix: tcp_stats
                 cluster: service-squid
                 tunneling_config:
-                  hostname: service-https:443
+                  hostname: "%REQUESTED_SERVER_NAME%:443"
                   headers_to_add:
                     - header:
                         key: Proxy-Authorization
                         value: Basic dXNlcjpwYXNzd29yZA== # user:password see squid/generate-htpasswd.sh
                       append: false
   clusters:
-    - name: loopback_cluster_service-https
+    - name: loopback_cluster-https
       typed_extension_protocol_options:
         envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
           "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
@@ -57,7 +61,7 @@ static_resources:
             http_protocol_options: {}
       type: STATIC
       load_assignment:
-        cluster_name: loopback_cluster_service-https
+        cluster_name: loopback_cluster-https
         endpoints:
           - lb_endpoints:
               - endpoint:

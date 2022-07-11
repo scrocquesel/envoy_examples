@@ -4,6 +4,9 @@ The client make http call to the endpoint service. Envoy handle TLS origination 
 
 {client} - http -> {envoy} - https -> {proxy} - https -> {endpoint}
 
-curl -s -H "host: service-https" http://localhost:10000  | jq -r '.headers["x-forwarded-proto"]'
+```sh
+curl -s -H "host: service-https" http://localhost:10000  | jq -r '.headers["host"]'
+curl -s -H "host: other-https" http://localhost:10000  | jq -r '.headers["host"]'
+```
 
 Currently, it is not feasible to handle dynamic forwarding due to TcpProxy tunneling_config requiring a static value for hostname used in the CONNECT statement to the L2 proxy. Each endpoint requires to configure a loopback cluster and listener duet.

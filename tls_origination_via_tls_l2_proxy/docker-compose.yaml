@@ -14,8 +14,9 @@ services:
     build:
       context: squid
       dockerfile: Dockerfile-squid
-    depends_on:
+    links:
     - service-https
+    - service-https:other-https
     hostname: service-squid
 
 
